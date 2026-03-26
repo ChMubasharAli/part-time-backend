@@ -1,9 +1,12 @@
 import fastify from "fastify";
 import * as dotenv from "dotenv";
+import userRoutes from "./routes/user.routes";
 
 dotenv.config();
 
 const app = fastify();
+
+app.register(userRoutes);
 
 const port = Number(process.env.PORT) || 3000;
 
