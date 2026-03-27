@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import * as repo from "../user.repository";
 import type { CreateUserInput, UpdateUserInput } from "../dto/user.dto";
 import type { Prisma } from "../../generated/prisma/client.js";
-import { skip } from "node:test";
+import { NotFoundError } from "../common/errors/notFoundError";
 
 // Create user service
 export const createUserService = async (data: CreateUserInput) => {
@@ -21,9 +21,12 @@ export const createUserService = async (data: CreateUserInput) => {
 // get users service
 export const getUsersService = async (page: number, limit: number) => {
   const skip = (page - 1) * limit;
+  console.log("Hello i am here");
 
   const users = await repo.getUsers(skip, limit);
+  // console.log("Hello user is ", users);
   const total = await repo.countUsers();
+  console.log("Total users are ", total);
 
   return {
     data: users,
@@ -34,7 +37,7 @@ export const getUsersService = async (page: number, limit: number) => {
 // GET BY ID
 export const getUserByIdService = async (id: string) => {
   const user = await repo.getUserById(id);
-  if (!user) throw new Error("User not found");
+  if (!user) throw new NotFoundError("User not found");
   return user;
 };
 
@@ -58,7 +61,9 @@ export const updateUserService = async (id: string, data: UpdateUserInput) => {
     updateData.passwordHash = await bcrypt.hash(data.password, 10);
   }
 
-  return repo.updateUser(id, updateData);
+  const updatedUser = await repo.updateUser(id, updateData);
+  if (!updatedUser) throw new NotFoundError("Failed to update user");
+  return updatedUser;
 };
 
 // FULL UPDATE (PUT)
@@ -66,7 +71,7 @@ export const updateUserService = async (id: string, data: UpdateUserInput) => {
 export const replaceUserService = async (id: string, data: CreateUserInput) => {
   const hashedPassword = await bcrypt.hash(data.password, 10);
 
-  return repo.updateUser(id, {
+  const updatedUser = await repo.updateUser(id, {
     passportNumber: data.passportNumber ?? null,
     phone: data.phone ?? null,
     passwordHash: hashedPassword,
@@ -75,9 +80,13 @@ export const replaceUserService = async (id: string, data: CreateUserInput) => {
     gender: data.gender ?? null,
     dob: data.dob ? new Date(data.dob) : null,
   });
+  if (!updatedUser) throw new NotFoundError("Failed to update user");
+  return updatedUser;
 };
 
 // Delete user service
 export const deleteUserService = async (id: string) => {
-  return repo.deleteUser(id);
+  const deletedUser = await repo.deleteUser(id);
+  if (!deletedUser) throw new NotFoundError("Failed to delete user");
+  return deletedUser;
 };
