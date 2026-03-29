@@ -9,11 +9,18 @@
 * 🟢 You can import this file directly.
 */
 
-export const Nationality = {
-  PAKISTANI: 'PAKISTANI',
-  INDIAN: 'INDIAN',
-  AMERICAN: 'AMERICAN',
-  OTHER: 'OTHER'
+export const gender = {
+  Male: 'Male',
+  Female: 'Female',
+  Other: 'Other'
 } as const
 
-export type Nationality = (typeof Nationality)[keyof typeof Nationality]
+export type gender = (typeof gender)[keyof typeof gender]
+
+
+export const nationality = {
+  Turkiye: 'Turkiye',
+  Pakistan: 'Pakistan'
+} as const
+
+export type nationality = (typeof nationality)[keyof typeof nationality]

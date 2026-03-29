@@ -1,23 +1,22 @@
 import type { Prisma } from "../generated/prisma/client";
-import type { UpdateUserInput } from "./dto/user.dto";
-import prisma from "./prisma";
+import prisma from "./db/prisma";
 
 // Create User
-export const createUser = async (data: Prisma.UserCreateInput) => {
-  return prisma.user.create({ data });
+export const createUser = async (data: Prisma.usersCreateInput) => {
+  return prisma.users.create({ data });
 };
 
 // Get All Users
 export const getAllUsers = async () => {
-  return prisma.user.findMany();
+  return prisma.users.findMany();
 };
 
 // Update user
-export const updateUser = async (id: string, data: Prisma.UserUpdateInput) => {
-  return prisma.user.update({ where: { id }, data });
+export const updateUser = async (id: string, data: Prisma.usersUpdateInput) => {
+  return prisma.users.update({ where: { id }, data });
 };
 
 // Delete User
 export const deleteUser = async (id: string) => {
-  return prisma.user.delete({ where: { id } });
+  return prisma.users.delete({ where: { id } });
 };
