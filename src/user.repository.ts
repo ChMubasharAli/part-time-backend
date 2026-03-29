@@ -1,34 +1,34 @@
 import type { Prisma } from "../generated/prisma/client";
-import prisma from "./prisma.js";
+import prisma from "./db/prisma.js";
 
-// Create User
-export const createUser = async (data: Prisma.UserCreateInput) => {
-  return prisma.user.create({ data });
+// Create users
+export const createUser = async (data: Prisma.usersCreateInput) => {
+  return prisma.users.create({ data });
 };
 
-// Get Users
+// Get userss
 export const getUsers = async (skip: number, limit: number) => {
-  return prisma.user.findMany({ skip, take: limit, orderBy: { id: "asc" } });
+  return prisma.users.findMany({ skip, take: limit, orderBy: { id: "asc" } });
 };
 
-// Count USER (get total how many users we have in database )
+// Count users (get total how many userss we have in database )
 export const countUsers = () => {
-  return prisma.user.count();
+  return prisma.users.count();
 };
 
-// Get User By Id
-export const getUserById = (id: string) => {
-  return prisma.user.findUnique({ where: { id } });
+// Get users By Id
+export const getUsersById = (id: string) => {
+  return prisma.users.findUnique({ where: { id } });
 };
 
-// Update Users
-export const updateUser = async (id: string, data: Prisma.UserUpdateInput) => {
-  return prisma.user.update({ where: { id }, data });
+// Update userss
+export const updateUser = async (id: string, data: Prisma.usersUpdateInput) => {
+  return prisma.users.update({ where: { id }, data });
 };
 
-// Delete User
+// Delete users
 export const deleteUser = async (id: string) => {
-  return prisma.user.delete({
+  return prisma.users.delete({
     where: { id },
   });
 };
