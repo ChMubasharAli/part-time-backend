@@ -8,13 +8,12 @@ import { NotFoundError } from "../common/errors/notFoundError";
 export const createUserService = async (data: CreateUserInput) => {
   const hashedPassword = await bcrypt.hash(data.password, 10);
   return repo.createUser({
-    passportNumber: data.passportNumber ?? null,
     phone: data.phone ?? null,
-    passwordHash: hashedPassword,
+    password_hash: hashedPassword,
     name: data.name ?? null,
     nationality: data.nationality ?? null,
     gender: data.gender ?? null,
-    dob: data.dob ? new Date(data.dob) : null,
+    dob: data.dob ?? new Date(data.dob),
   });
 };
 
@@ -43,10 +42,8 @@ export const getUserByIdService = async (id: string) => {
 
 // Update User (PATCH style)
 export const updateUserService = async (id: string, data: UpdateUserInput) => {
-  const updateData: Prisma.UserUpdateInput = {};
+  const updateData: Prisma.usersUpdateInput = {};
 
-  if (data.passportNumber !== undefined)
-    updateData.passportNumber = data.passportNumber;
   if (data.phone !== undefined) updateData.phone = data.phone;
 
   if (data.name !== undefined) updateData.name = data.name;
@@ -58,7 +55,7 @@ export const updateUserService = async (id: string, data: UpdateUserInput) => {
   if (data.dob !== undefined) updateData.dob = new Date(data.dob);
 
   if (data.password) {
-    updateData.passwordHash = await bcrypt.hash(data.password, 10);
+    updateData.password_hash = await bcrypt.hash(data.password, 10);
   }
 
   const updatedUser = await repo.updateUser(id, updateData);
@@ -72,13 +69,12 @@ export const replaceUserService = async (id: string, data: CreateUserInput) => {
   const hashedPassword = await bcrypt.hash(data.password, 10);
 
   const updatedUser = await repo.updateUser(id, {
-    passportNumber: data.passportNumber ?? null,
     phone: data.phone ?? null,
-    passwordHash: hashedPassword,
+    password_hash: hashedPassword,
     name: data.name ?? null,
     nationality: data.nationality ?? null,
     gender: data.gender ?? null,
-    dob: data.dob ? new Date(data.dob) : null,
+    dob: data.dob ?? new Date(data.dob),
   });
   if (!updatedUser) throw new NotFoundError("Failed to update user");
   return updatedUser;

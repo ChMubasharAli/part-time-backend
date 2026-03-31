@@ -1,16 +1,22 @@
 import type { FastifyInstance } from "fastify";
-import { createUserSchema, updateUserSchema } from "../dto/user.dto.js";
+import {
+  createUserSchema,
+  updateUserSchema,
+  type CreateUserInput,
+} from "../dto/user.dto.js";
 import * as service from "../services/user.services.js";
 import { asyncHandler } from "../common/middleware/asyncHandler.js";
+import { validate } from "../common/middleware/validate.middleware.js";
+import { rateLimitMiddleware } from "../common/middleware/reateLinit.middleware.js";
 
 export default async function userRoutes(app: FastifyInstance) {
   // CREATE
-  app.post(
+  app.post<{ Body: CreateUserInput }>(
     "/users",
+    { preHandler: [validate(createUserSchema)] },
     asyncHandler(async (req, reply) => {
-      const parsed = createUserSchema.safeParse(req.body);
-      if (!parsed.success) throw parsed.error;
-      const result = await service.createUserService(parsed.data);
+      const body = req.body as CreateUserInput;
+      const result = await service.createUserService(body);
 
       return reply.status(201).send(result);
     }),
@@ -19,6 +25,7 @@ export default async function userRoutes(app: FastifyInstance) {
   // GET ALL
   app.get(
     "/users",
+    { preHandler: [rateLimitMiddleware] },
     asyncHandler(async (req) => {
       const { page = "1", limit = "10" } = req.query as any;
 
